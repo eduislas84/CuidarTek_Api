@@ -1,4 +1,5 @@
-from mysql.connector import connect, Error
+import pymysql
+from pymysql import Error
 import os
 from dotenv import load_dotenv
 
@@ -10,16 +11,17 @@ class Database:
         self.user = os.getenv("DB_USER", "root")
         self.password = os.getenv("DB_PASSWORD", "12345")
         self.database = os.getenv("DB_NAME", "cuidartek_db")
-        self.port = os.getenv("DB_PORT", "3306")
+        self.port = int(os.getenv("DB_PORT", "3306"))  # Convertir a int aquí
 
     def get_connection(self):
         try:
-            connection = connect(
+            connection = pymysql.connect(  # ✅ Cambiado a pymysql.connect
                 host=self.host,
                 user=self.user,
                 password=self.password,
                 database=self.database,
-                port=int(self.port)
+                port=self.port,
+                cursorclass=pymysql.cursors.DictCursor  # ✅ Agregar esto para obtener diccionarios
             )
             return connection
         except Error as e:
@@ -28,13 +30,14 @@ class Database:
 
     def create_database_and_tables(self):
         """Crea la base de datos y las tablas si no existen"""
+        connection = None
         try:
             # Primero conectamos sin especificar base de datos para crearla
-            connection = connect(
+            connection = pymysql.connect(  # ✅ Cambiado a pymysql.connect
                 host=self.host,
                 user=self.user,
                 password=self.password,
-                port=int(self.port)
+                port=self.port
             )
             cursor = connection.cursor()
             
@@ -190,7 +193,7 @@ class Database:
         except Error as e:
             print(f"Error creating database and tables: {e}")
         finally:
-            if connection.is_connected():
+            if connection and connection.open:  # ✅ Cambiado a connection.open
                 cursor.close()
                 connection.close()
 
