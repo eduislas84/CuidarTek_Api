@@ -1,6 +1,7 @@
 
 from database import db
-from mysql.connector import Error
+import pymysql
+from pymysql import Error
 
 class RetosModel:
     @staticmethod
