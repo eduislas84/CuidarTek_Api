@@ -1,25 +1,36 @@
-from mysql.connector import connect, Error
+import pymysql
+from pymysql import Error
 import os
 from dotenv import load_dotenv
+import ssl
 
 load_dotenv()
 
 class Database:
     def __init__(self):
-        self.host = os.getenv("DB_HOST", "localhost")
-        self.user = os.getenv("DB_USER", "root")
-        self.password = os.getenv("DB_PASSWORD", "12345")
-        self.database = os.getenv("DB_NAME", "cuidartek_db")
-        self.port = os.getenv("DB_PORT", "3306")
+        self.host = os.getenv("DB_HOST")
+        self.user = os.getenv("DB_USER")
+        self.password = os.getenv("DB_PASSWORD")
+        self.database = os.getenv("DB_NAME", "defaultdb")
+        self.port = int(os.getenv("DB_PORT", "3306"))
 
     def get_connection(self):
         try:
-            connection = connect(
+            # Configuración SSL para Aiven
+            ssl_context = ssl.create_default_context()
+            ssl_context.check_hostname = False
+            ssl_context.verify_mode = ssl.CERT_NONE
+            
+            connection = pymysql.connect(
                 host=self.host,
                 user=self.user,
                 password=self.password,
                 database=self.database,
-                port=int(self.port)
+                port=self.port,
+                cursorclass=pymysql.cursors.DictCursor,
+                ssl=ssl_context,
+                connect_timeout=10,
+                autocommit=True
             )
             return connection
         except Error as e:
@@ -28,19 +39,21 @@ class Database:
 
     def create_database_and_tables(self):
         """Crea la base de datos y las tablas si no existen"""
+        connection = None
         try:
-            # Primero conectamos sin especificar base de datos para crearla
-            connection = connect(
-                host=self.host,
-                user=self.user,
-                password=self.password,
-                port=int(self.port)
-            )
+            print("🏗️ Iniciando creación de tablas...")
+            
+            connection = self.get_connection()
+            if not connection:
+                print("❌ No se pudo conectar a la base de datos")
+                return
+            
             cursor = connection.cursor()
             
-            # Crear base de datos si no existe
-            cursor.execute(f"CREATE DATABASE IF NOT EXISTS {self.database}")
-            cursor.execute(f"USE {self.database}")
+            # Verificar conexión
+            cursor.execute("SELECT DATABASE() as current_db")
+            db_info = cursor.fetchone()
+            print(f"📊 Conectado a: {db_info['current_db']}")
             
             # Crear tabla Usuario
             cursor.execute("""
@@ -54,6 +67,7 @@ class Database:
                     estatus ENUM('Activo', 'Inactivo') DEFAULT 'Activo'
                 )
             """)
+            print("✅ Tabla 'usuario' creada/verificada")
             
             # Crear tabla Paciente
             cursor.execute("""
@@ -71,6 +85,7 @@ class Database:
                     FOREIGN KEY (doctor_asignado) REFERENCES usuario(id_usuario) ON DELETE SET NULL
                 )
             """)
+            print("✅ Tabla 'paciente' creada/verificada")
             
             # Crear tabla Indicadores_Salud
             cursor.execute("""
@@ -89,6 +104,7 @@ class Database:
                     FOREIGN KEY (id_paciente) REFERENCES paciente(id_paciente) ON DELETE CASCADE
                 )
             """)
+            print("✅ Tabla 'indicadores_salud' creada/verificada")
             
             # Crear tabla Alertas
             cursor.execute("""
@@ -102,6 +118,7 @@ class Database:
                     FOREIGN KEY (id_paciente) REFERENCES paciente(id_paciente) ON DELETE CASCADE
                 )
             """)
+            print("✅ Tabla 'alertas' creada/verificada")
             
             # Crear tabla Recomendaciones
             cursor.execute("""
@@ -114,6 +131,7 @@ class Database:
                     FOREIGN KEY (id_paciente) REFERENCES paciente(id_paciente) ON DELETE CASCADE
                 )
             """)
+            print("✅ Tabla 'recomendaciones' creada/verificada")
             
             # Crear tabla Retos
             cursor.execute("""
@@ -129,6 +147,7 @@ class Database:
                     FOREIGN KEY (id_paciente) REFERENCES paciente(id_paciente) ON DELETE CASCADE
                 )
             """)
+            print("✅ Tabla 'retos' creada/verificada")
             
             # Crear tabla Citas_Medicas
             cursor.execute("""
@@ -144,6 +163,7 @@ class Database:
                     FOREIGN KEY (id_medico) REFERENCES usuario(id_usuario) ON DELETE CASCADE
                 )
             """)
+            print("✅ Tabla 'citas_medicas' creada/verificada")
             
             # Crear tabla Reportes_Medicos
             cursor.execute("""
@@ -159,6 +179,7 @@ class Database:
                     FOREIGN KEY (id_medico) REFERENCES usuario(id_usuario) ON DELETE CASCADE
                 )
             """)
+            print("✅ Tabla 'reportes_medicos' creada/verificada")
             
             # Crear tabla Sesiones_Wearable
             cursor.execute("""
@@ -171,6 +192,7 @@ class Database:
                     FOREIGN KEY (id_paciente) REFERENCES paciente(id_paciente) ON DELETE CASCADE
                 )
             """)
+            print("✅ Tabla 'sesiones_wearable' creada/verificada")
             
             # Crear tabla Log_Accesos
             cursor.execute("""
@@ -183,6 +205,7 @@ class Database:
                     FOREIGN KEY (id_usuario) REFERENCES usuario(id_usuario) ON DELETE CASCADE
                 )
             """)
+            print("✅ Tabla 'log_accesos' creada/verificada")
 
             # Crear tabla Mensajes
             cursor.execute("""
@@ -199,7 +222,9 @@ class Database:
                     FOREIGN KEY (id_destinatario) REFERENCES usuario(id_usuario) ON DELETE CASCADE
                 )
             """)
-            # Crear tabla Paciente_Medico (relaciones)
+            print("✅ Tabla 'mensajes' creada/verificada")
+            
+            # Crear tabla Paciente_Medico
             cursor.execute("""
                 CREATE TABLE IF NOT EXISTS paciente_medico (
                     id_relacion INT AUTO_INCREMENT PRIMARY KEY,
@@ -214,7 +239,9 @@ class Database:
                     FOREIGN KEY (id_medico) REFERENCES usuario(id_usuario) ON DELETE CASCADE
                 )
             """)
-            # Crear tabla Medico (perfil médico)
+            print("✅ Tabla 'paciente_medico' creada/verificada")
+            
+            # Crear tabla Medico
             cursor.execute("""
                 CREATE TABLE IF NOT EXISTS medico (
                     id_medico INT AUTO_INCREMENT PRIMARY KEY,
@@ -231,16 +258,19 @@ class Database:
                     FOREIGN KEY (id_usuario) REFERENCES usuario(id_usuario) ON DELETE CASCADE
                 )
             """)
+            print("✅ Tabla 'medico' creada/verificada")
             
-            connection.commit()
-            print("Base de datos y tablas creadas exitosamente!")
+            print("🎉 ¡Todas las tablas creadas exitosamente!")
             
         except Error as e:
-            print(f"Error creating database and tables: {e}")
+            print(f"❌ Error creando tablas: {e}")
+        except Exception as e:
+            print(f"❌ Error inesperado: {e}")
         finally:
-            if connection.is_connected():
+            if connection and connection.open:
                 cursor.close()
                 connection.close()
+                print("🔒 Conexión cerrada")
 
 # Crear instancia global de la base de datos
 db = Database()
