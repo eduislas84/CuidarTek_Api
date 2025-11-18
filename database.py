@@ -8,14 +8,13 @@ load_dotenv()
 
 class Database:
     def __init__(self):
-        # No usar valores por defecto locales - forzar uso de variables de entorno
+        # Usar defaultdb que es la base de datos que Aiven provee
         self.host = os.getenv("DB_HOST")
         self.user = os.getenv("DB_USER")
         self.password = os.getenv("DB_PASSWORD")
-        self.database = os.getenv("DB_NAME")
+        self.database = os.getenv("DB_NAME", "defaultdb")  # Aiven usa defaultdb
         self.port = int(os.getenv("DB_PORT", "3306"))
         
-        # Verificar que todas las variables críticas estén presentes
         self._check_environment_variables()
 
     def _check_environment_variables(self):
@@ -30,9 +29,8 @@ class Database:
         missing_vars = [var for var, value in required_vars.items() if not value]
         if missing_vars:
             print(f"⚠️  Variables de entorno faltantes: {', '.join(missing_vars)}")
-            print("   Configúralas en Railway -> Variables")
         else:
-            print("✅ Todas las variables de entorno están configuradas")
+            print(f"✅ Variables configuradas - Conectando a: {self.host}:{self.port}/{self.database}")
 
     def get_connection(self):
         try:
@@ -41,12 +39,12 @@ class Database:
                 print("❌ No se puede conectar: variables de BD incompletas")
                 return None
             
-            # Configuración SSL para Aiven
+            # Configuración SSL para Aiven (REQUIRED como indica la URI)
             ssl_context = ssl.create_default_context()
             ssl_context.check_hostname = False
             ssl_context.verify_mode = ssl.CERT_NONE
             
-            print(f"🔗 Intentando conectar a: {self.host}:{self.port}")
+            print(f"🔗 Conectando a Aiven: {self.user}@{self.host}:{self.port}/{self.database}")
             
             connection = pymysql.connect(
                 host=self.host,
@@ -55,43 +53,39 @@ class Database:
                 database=self.database,
                 port=self.port,
                 cursorclass=pymysql.cursors.DictCursor,
-                ssl=ssl_context,  # SSL para Aiven
-                connect_timeout=10,  # Timeout para conexiones cloud
-                autocommit=True  # Asegurar autocommit para operaciones
+                ssl=ssl_context,
+                connect_timeout=15,
+                autocommit=True
             )
             
-            print("✅ Conectado a Aiven MySQL exitosamente")
+            print("✅ ¡Conectado a Aiven MySQL exitosamente!")
             return connection
             
         except Error as e:
-            print(f"❌ Error conectando a Aiven MySQL: {e}")
-            print(f"   Host: {self.host}")
-            print(f"   Puerto: {self.port}")
-            print(f"   Usuario: {self.user}")
-            print(f"   Base de datos: {self.database}")
+            print(f"❌ Error de conexión MySQL: {e}")
             return None
         except Exception as e:
             print(f"❌ Error inesperado: {e}")
             return None
 
     def create_database_and_tables(self):
-        """Crea la base de datos y las tablas si no existen"""
+        """Crea las tablas en la base de datos defaultdb de Aiven"""
         connection = None
         try:
-            print("🏗️  Iniciando creación de base de datos y tablas...")
+            print("🏗️  Iniciando creación de tablas en defaultdb...")
             
-            # Primero intentamos conectar directamente a la base de datos
             connection = self.get_connection()
             if not connection:
-                print("❌ No se pudo conectar para crear tablas")
+                print("❌ No se pudo conectar a la base de datos")
                 return
             
             cursor = connection.cursor()
             
-            # Verificar si la base de datos existe, si no, crearla
-            cursor.execute("SELECT DATABASE() as current_db")
-            current_db = cursor.fetchone()
-            print(f"📊 Usando base de datos: {current_db['current_db']}")
+            # Verificar conexión
+            cursor.execute("SELECT DATABASE() as current_db, NOW() as server_time")
+            db_info = cursor.fetchone()
+            print(f"📊 Conectado a: {db_info['current_db']}")
+            print(f"⏰ Hora del servidor: {db_info['server_time']}")
             
             # Crear tabla Usuario
             cursor.execute("""
@@ -245,10 +239,10 @@ class Database:
             """)
             print("✅ Tabla 'log_accesos' creada/verificada")
             
-            print("🎉 Base de datos y tablas creadas/verificadas exitosamente!")
+            print("🎉 ¡Todas las tablas creadas exitosamente en Aiven!")
             
         except Error as e:
-            print(f"❌ Error creando base de datos y tablas: {e}")
+            print(f"❌ Error creando tablas: {e}")
         except Exception as e:
             print(f"❌ Error inesperado: {e}")
         finally:
