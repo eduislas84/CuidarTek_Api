@@ -20,7 +20,7 @@ class UsuarioModel:
         except Error as e:
             raise e
         finally:
-            if connection.is_connected():
+            if connection and connection.open:
                 cursor.close()
                 connection.close()
 
@@ -32,7 +32,7 @@ class UsuarioModel:
             cursor.execute("SELECT * FROM usuario")
             return cursor.fetchall()
         finally:
-            if connection.is_connected():
+            if connection and connection.open:
                 cursor.close()
                 connection.close()
 
@@ -44,7 +44,7 @@ class UsuarioModel:
             cursor.execute("SELECT * FROM usuario WHERE id_usuario = %s", (usuario_id,))
             return cursor.fetchone()
         finally:
-            if connection.is_connected():
+            if connection and connection.open:
                 cursor.close()
                 connection.close()
 
@@ -56,7 +56,7 @@ class UsuarioModel:
             cursor.execute("SELECT * FROM usuario WHERE correo = %s", (correo,))
             return cursor.fetchone()
         finally:
-            if connection.is_connected():
+            if connection and connection.open:
                 cursor.close()
                 connection.close()
 
@@ -85,7 +85,7 @@ class UsuarioModel:
         except Error as e:
             raise e
         finally:
-            if connection.is_connected():
+            if connection and connection.open:
                 cursor.close()
                 connection.close()
 
@@ -100,7 +100,7 @@ class UsuarioModel:
         except Error as e:
             raise e
         finally:
-            if connection.is_connected():
+            if connection and connection.open:
                 cursor.close()
                 connection.close()
 

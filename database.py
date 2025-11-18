@@ -11,7 +11,7 @@ class Database:
         self.host = os.getenv("DB_HOST")
         self.user = os.getenv("DB_USER")
         self.password = os.getenv("DB_PASSWORD")
-        self.database = os.getenv("DB_NAME", "defaultdb")
+        self.database = os.getenv("DB_NAME", "cuidartek_db")
         self.port = int(os.getenv("DB_PORT", "3306"))
 
     def get_connection(self):
