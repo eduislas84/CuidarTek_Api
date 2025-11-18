@@ -9,6 +9,9 @@ from .citas_medicas_model import CitasMedicasModel
 from .reportes_medicos_model import ReportesMedicosModel
 from .sesiones_wearable_model import SesionesWearableModel
 from .log_accesos_model import LogAccesosModel
+from .mensajes_model import MensajesModel
+from .paciente_medico_model import PacienteMedicoModel
+from .medico_model import MedicoModel
 
 __all__ = [
     'UsuarioModel',
@@ -20,5 +23,8 @@ __all__ = [
     'CitasMedicasModel',
     'ReportesMedicosModel',
     'SesionesWearableModel',
-    'LogAccesosModel'
+    'LogAccesosModel',
+    'MensajesModel',
+    'PacienteMedicoModel',
+    'MedicoModel'
 ]

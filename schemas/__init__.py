@@ -9,6 +9,12 @@ from .citas_medicas_schema import CitasMedicas, CitasMedicasCreate, CitasMedicas
 from .reportes_medicos_schema import ReportesMedicos, ReportesMedicosCreate, ReportesMedicosUpdate
 from .sesiones_wearable_schema import SesionesWearable, SesionesWearableCreate, SesionesWearableUpdate
 from .log_accesos_schema import LogAccesos, LogAccesosCreate, LogAccesosUpdate
+from .mensajes_schema import Mensaje, MensajeCreate, MensajeUpdate, MensajeConNombres, ConversacionResponse
+from .paciente_medico_schema import (
+    PacienteMedico, PacienteMedicoCreate, PacienteMedicoUpdate,
+    PacienteMedicoConNombres, SolicitudPendiente, PacienteConInfo
+)
+from .medico_schema import Medico, MedicoCreate, MedicoUpdate, MedicoConUsuario, MedicoConPacientes
 
 __all__ = [
     'Usuario', 'UsuarioCreate', 'UsuarioUpdate',
@@ -20,5 +26,11 @@ __all__ = [
     'CitasMedicas', 'CitasMedicasCreate', 'CitasMedicasUpdate',
     'ReportesMedicos', 'ReportesMedicosCreate', 'ReportesMedicosUpdate',
     'SesionesWearable', 'SesionesWearableCreate', 'SesionesWearableUpdate',
-    'LogAccesos', 'LogAccesosCreate', 'LogAccesosUpdate'
+    'LogAccesos', 'LogAccesosCreate', 'LogAccesosUpdate',
+    'Mensaje', 'MensajeCreate', 'MensajeUpdate', 'MensajeConNombres', 'ConversacionResponse',
+    
+    'PacienteMedico', 'PacienteMedicoCreate', 'PacienteMedicoUpdate',
+    'PacienteMedicoConNombres', 'SolicitudPendiente', 'PacienteConInfo',
+    'Medico', 'MedicoCreate', 'MedicoUpdate', 'MedicoConUsuario', 'MedicoConPacientes'
+
 ]

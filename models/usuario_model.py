@@ -1,6 +1,5 @@
 from database import db
-import pymysql
-from pymysql import Error
+from mysql.connector import Error
 
 class UsuarioModel:
     @staticmethod

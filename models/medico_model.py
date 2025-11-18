@@ -1,23 +1,26 @@
-
 from database import db
 from mysql.connector import Error
 
-class ReportesMedicosModel:
+class MedicoModel:
     @staticmethod
-    def create(reporte_data: dict):
+    def create(medico_data: dict):
         connection = db.get_connection()
         try:
             cursor = connection.cursor(dictionary=True)
             cursor.execute(
-                """INSERT INTO reportes_medicos (id_paciente, id_medico, descripcion_general, diagnostico, recomendaciones_medicas) 
-                VALUES (%s, %s, %s, %s, %s)""",
-                (reporte_data['id_paciente'], reporte_data['id_medico'],
-                 reporte_data.get('descripcion_general'), reporte_data.get('diagnostico'),
-                 reporte_data.get('recomendaciones_medicas'))
+                """INSERT INTO medico 
+                (id_usuario, especialidad, cedula_profesional, telefono_consultorio, 
+                 direccion_consultorio, horario_consultorio, anos_experiencia, universidad, estatus) 
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)""",
+                (medico_data['id_usuario'], medico_data['especialidad'], 
+                 medico_data.get('cedula_profesional'), medico_data.get('telefono_consultorio'),
+                 medico_data.get('direccion_consultorio'), medico_data.get('horario_consultorio'),
+                 medico_data.get('anos_experiencia'), medico_data.get('universidad'),
+                 medico_data.get('estatus', 'Activo'))
             )
             connection.commit()
-            reporte_id = cursor.lastrowid
-            cursor.execute("SELECT * FROM reportes_medicos WHERE id_reporte = %s", (reporte_id,))
+            medico_id = cursor.lastrowid
+            cursor.execute("SELECT * FROM medico WHERE id_medico = %s", (medico_id,))
             return cursor.fetchone()
         except Error as e:
             raise e
@@ -31,7 +34,12 @@ class ReportesMedicosModel:
         connection = db.get_connection()
         try:
             cursor = connection.cursor(dictionary=True)
-            cursor.execute("SELECT * FROM reportes_medicos")
+            cursor.execute("""
+                SELECT m.*, u.nombre, u.correo, u.rol
+                FROM medico m
+                JOIN usuario u ON m.id_usuario = u.id_usuario
+                WHERE u.estatus = 'Activo' AND m.estatus = 'Activo'
+            """)
             return cursor.fetchall()
         finally:
             if connection.is_connected():
@@ -39,11 +47,16 @@ class ReportesMedicosModel:
                 connection.close()
 
     @staticmethod
-    def get_by_id(reporte_id: int):
+    def get_by_id(medico_id: int):
         connection = db.get_connection()
         try:
             cursor = connection.cursor(dictionary=True)
-            cursor.execute("SELECT * FROM reportes_medicos WHERE id_reporte = %s", (reporte_id,))
+            cursor.execute("""
+                SELECT m.*, u.nombre, u.correo, u.rol
+                FROM medico m
+                JOIN usuario u ON m.id_usuario = u.id_usuario
+                WHERE m.id_medico = %s
+            """, (medico_id,))
             return cursor.fetchone()
         finally:
             if connection.is_connected():
@@ -51,11 +64,35 @@ class ReportesMedicosModel:
                 connection.close()
 
     @staticmethod
-    def get_by_paciente_id(paciente_id: int):
+    def get_by_user_id(usuario_id: int):
         connection = db.get_connection()
         try:
             cursor = connection.cursor(dictionary=True)
-            cursor.execute("SELECT * FROM reportes_medicos WHERE id_paciente = %s ORDER BY fecha_reporte DESC", (paciente_id,))
+            cursor.execute("""
+                SELECT m.*, u.nombre, u.correo, u.rol
+                FROM medico m
+                JOIN usuario u ON m.id_usuario = u.id_usuario
+                WHERE m.id_usuario = %s
+            """, (usuario_id,))
+            return cursor.fetchone()
+        finally:
+            if connection.is_connected():
+                cursor.close()
+                connection.close()
+
+    @staticmethod
+    def get_medicos_activos():
+        connection = db.get_connection()
+        try:
+            cursor = connection.cursor(dictionary=True)
+            cursor.execute("""
+                SELECT m.*, u.nombre, u.correo, u.rol,
+                       (SELECT COUNT(*) FROM paciente_medico pm 
+                        WHERE pm.id_medico = m.id_usuario AND pm.estatus = 'activo') as total_pacientes
+                FROM medico m
+                JOIN usuario u ON m.id_usuario = u.id_usuario
+                WHERE u.estatus = 'Activo' AND m.estatus = 'Activo'
+            """)
             return cursor.fetchall()
         finally:
             if connection.is_connected():
@@ -63,37 +100,25 @@ class ReportesMedicosModel:
                 connection.close()
 
     @staticmethod
-    def get_by_medico_id(medico_id: int):
-        connection = db.get_connection()
-        try:
-            cursor = connection.cursor(dictionary=True)
-            cursor.execute("SELECT * FROM reportes_medicos WHERE id_medico = %s ORDER BY fecha_reporte DESC", (medico_id,))
-            return cursor.fetchall()
-        finally:
-            if connection.is_connected():
-                cursor.close()
-                connection.close()
-
-    @staticmethod
-    def update(reporte_id: int, reporte_data: dict):
+    def update(medico_id: int, medico_data: dict):
         connection = db.get_connection()
         try:
             cursor = connection.cursor(dictionary=True)
             
             update_fields = []
             values = []
-            for field, value in reporte_data.items():
+            for field, value in medico_data.items():
                 if value is not None:
                     update_fields.append(f"{field} = %s")
                     values.append(value)
             
-            values.append(reporte_id)
-            query = f"UPDATE reportes_medicos SET {', '.join(update_fields)} WHERE id_reporte = %s"
+            values.append(medico_id)
+            query = f"UPDATE medico SET {', '.join(update_fields)} WHERE id_medico = %s"
             
             cursor.execute(query, values)
             connection.commit()
             
-            cursor.execute("SELECT * FROM reportes_medicos WHERE id_reporte = %s", (reporte_id,))
+            cursor.execute("SELECT * FROM medico WHERE id_medico = %s", (medico_id,))
             return cursor.fetchone()
         except Error as e:
             raise e
@@ -103,11 +128,11 @@ class ReportesMedicosModel:
                 connection.close()
 
     @staticmethod
-    def delete(reporte_id: int):
+    def delete(medico_id: int):
         connection = db.get_connection()
         try:
             cursor = connection.cursor()
-            cursor.execute("DELETE FROM reportes_medicos WHERE id_reporte = %s", (reporte_id,))
+            cursor.execute("DELETE FROM medico WHERE id_medico = %s", (medico_id,))
             connection.commit()
             return cursor.rowcount > 0
         except Error as e:

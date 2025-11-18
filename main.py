@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from database import db
 from middleware.logging_middleware import LoggingMiddleware
 from controllers import (
@@ -12,7 +13,10 @@ from controllers import (
     citas_medicas_controller,
     reportes_medicos_controller,
     sesiones_wearable_controller,
-    log_accesos_controller
+    log_accesos_controller,
+    mensajes_controller,
+    paciente_medico_controller,
+    medico_controller
 )
 
 app = FastAPI(
@@ -21,7 +25,18 @@ app = FastAPI(
     version="2.0.0"
 )
 
-# Agregar middleware de logging
+# ------------------------------------------------
+# 🔥 CORS ES OBLIGATORIO para permitir OPTIONS
+# ------------------------------------------------
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Cambiar a ["http://localhost:3000"] si quieres
+    allow_credentials=True,
+    allow_methods=["*"],  # ← Permite OPTIONS, POST, GET, DELETE, etc.
+    allow_headers=["*"],
+)
+
+# Middleware de logging
 app.add_middleware(LoggingMiddleware)
 
 # Crear base de datos al iniciar
@@ -45,6 +60,10 @@ app.include_router(citas_medicas_controller.router)
 app.include_router(reportes_medicos_controller.router)
 app.include_router(sesiones_wearable_controller.router)
 app.include_router(log_accesos_controller.router)
+app.include_router(mensajes_controller.router)
+app.include_router(paciente_medico_controller.router)
+app.include_router(medico_controller.router)
+
 
 @app.get("/status/database")
 async def verificar_estado_db():
