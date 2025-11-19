@@ -28,7 +28,8 @@ class SesionesWearableModel:
         except Error as e:
             raise e
         finally:
-            if connection.is_connected():
+            if connection and connection.open:
+
                 cursor.close()
                 connection.close()
 
@@ -40,7 +41,7 @@ class SesionesWearableModel:
             cursor.execute("SELECT * FROM sesiones_wearable")
             return cursor.fetchall()
         finally:
-            if connection.is_connected():
+            if connection and connection.open:
                 cursor.close()
                 connection.close()
 
@@ -52,7 +53,7 @@ class SesionesWearableModel:
             cursor.execute("SELECT * FROM sesiones_wearable WHERE id_sesion = %s", (sesion_id,))
             return cursor.fetchone()
         finally:
-            if connection.is_connected():
+            if connection and connection.open:
                 cursor.close()
                 connection.close()
 
@@ -64,7 +65,7 @@ class SesionesWearableModel:
             cursor.execute("SELECT * FROM sesiones_wearable WHERE id_paciente = %s ORDER BY fecha_sincronizacion DESC", (paciente_id,))
             return cursor.fetchall()
         finally:
-            if connection.is_connected():
+            if connection and connection.open:
                 cursor.close()
                 connection.close()
 
@@ -76,7 +77,7 @@ class SesionesWearableModel:
             cursor.execute("SELECT * FROM sesiones_wearable WHERE dispositivo = %s ORDER BY fecha_sincronizacion DESC", (dispositivo,))
             return cursor.fetchall()
         finally:
-            if connection.is_connected():
+            if connection and connection.open:
                 cursor.close()
                 connection.close()
 
@@ -108,7 +109,7 @@ class SesionesWearableModel:
         except Error as e:
             raise e
         finally:
-            if connection.is_connected():
+            if connection and connection.open:
                 cursor.close()
                 connection.close()
 
@@ -123,6 +124,6 @@ class SesionesWearableModel:
         except Error as e:
             raise e
         finally:
-            if connection.is_connected():
+            if connection and connection.open:
                 cursor.close()
                 connection.close()

@@ -23,7 +23,7 @@ class RetosModel:
         except Error as e:
             raise e
         finally:
-            if connection.is_connected():
+            if connection and connection.open:
                 cursor.close()
                 connection.close()
 
@@ -35,7 +35,7 @@ class RetosModel:
             cursor.execute("SELECT * FROM retos")
             return cursor.fetchall()
         finally:
-            if connection.is_connected():
+            if connection and connection.open:
                 cursor.close()
                 connection.close()
 
@@ -47,7 +47,7 @@ class RetosModel:
             cursor.execute("SELECT * FROM retos WHERE id_reto = %s", (reto_id,))
             return cursor.fetchone()
         finally:
-            if connection.is_connected():
+            if connection and connection.open:
                 cursor.close()
                 connection.close()
 
@@ -59,7 +59,7 @@ class RetosModel:
             cursor.execute("SELECT * FROM retos WHERE id_paciente = %s", (paciente_id,))
             return cursor.fetchall()
         finally:
-            if connection.is_connected():
+            if connection and connection.open:
                 cursor.close()
                 connection.close()
 
@@ -71,7 +71,7 @@ class RetosModel:
             cursor.execute("SELECT * FROM retos WHERE progreso < 100 AND (fecha_fin IS NULL OR fecha_fin >= CURDATE())")
             return cursor.fetchall()
         finally:
-            if connection.is_connected():
+            if connection and connection.open:
                 cursor.close()
                 connection.close()
 
@@ -99,7 +99,7 @@ class RetosModel:
         except Error as e:
             raise e
         finally:
-            if connection.is_connected():
+            if connection and connection.open:
                 cursor.close()
                 connection.close()
 
@@ -114,6 +114,6 @@ class RetosModel:
         except Error as e:
             raise e
         finally:
-            if connection.is_connected():
+            if connection and connection.open:
                 cursor.close()
                 connection.close()

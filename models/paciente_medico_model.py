@@ -22,7 +22,7 @@ class PacienteMedicoModel:
         except Error as e:
             raise e
         finally:
-            if connection.is_connected():
+            if connection and connection.open:
                 cursor.close()
                 connection.close()
 
@@ -42,7 +42,7 @@ class PacienteMedicoModel:
             """, (paciente_id,))
             return cursor.fetchall()
         finally:
-            if connection.is_connected():
+            if connection and connection.open:
                 cursor.close()
                 connection.close()
 
@@ -70,7 +70,7 @@ class PacienteMedicoModel:
         except Error as e:
             raise e
         finally:
-            if connection.is_connected():
+            if connection and connection.open:
                 cursor.close()
                 connection.close()
 
@@ -85,7 +85,7 @@ class PacienteMedicoModel:
             """, (paciente_id, medico_id))
             return cursor.fetchone()
         finally:
-            if connection.is_connected():
+            if connection and connection.open:
                 cursor.close()
                 connection.close()
 
@@ -100,7 +100,7 @@ class PacienteMedicoModel:
         except Error as e:
             raise e
         finally:
-            if connection.is_connected():
+            if connection and connection.open:
                 cursor.close()
                 connection.close()
                 
@@ -130,7 +130,7 @@ class PacienteMedicoModel:
             print(f"❌ Error en get_medicos_del_paciente: {str(e)}")
             raise e
         finally:
-            if connection.is_connected():
+            if connection and connection.open:
                 cursor.close()
                 connection.close()
 
@@ -159,7 +159,7 @@ class PacienteMedicoModel:
             print(f"❌ Error en get_solicitudes_pendientes_medico: {str(e)}")
             raise e
         finally:
-            if connection.is_connected():
+            if connection and connection.open:
                 cursor.close()
                 connection.close()
 
@@ -190,7 +190,7 @@ class PacienteMedicoModel:
             print(f"❌ Error en get_pacientes_del_medico: {str(e)}")
             raise e
         finally:
-            if connection.is_connected():
+            if connection and connection.open:
                 cursor.close()
                 connection.close()
 
@@ -217,6 +217,6 @@ class PacienteMedicoModel:
             print(f"❌ Error en get_by_id: {str(e)}")
             raise e
         finally:
-            if connection.is_connected():
+            if connection and connection.open:
                 cursor.close()
                 connection.close()

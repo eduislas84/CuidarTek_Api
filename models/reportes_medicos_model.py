@@ -23,7 +23,7 @@ class ReportesMedicosModel:
         except Error as e:
             raise e
         finally:
-            if connection.is_connected():
+            if connection and connection.open:
                 cursor.close()
                 connection.close()
 
@@ -35,7 +35,7 @@ class ReportesMedicosModel:
             cursor.execute("SELECT * FROM reportes_medicos")
             return cursor.fetchall()
         finally:
-            if connection.is_connected():
+            if connection and connection.open:
                 cursor.close()
                 connection.close()
 
@@ -47,7 +47,7 @@ class ReportesMedicosModel:
             cursor.execute("SELECT * FROM reportes_medicos WHERE id_reporte = %s", (reporte_id,))
             return cursor.fetchone()
         finally:
-            if connection.is_connected():
+            if connection and connection.open:
                 cursor.close()
                 connection.close()
 
@@ -59,7 +59,7 @@ class ReportesMedicosModel:
             cursor.execute("SELECT * FROM reportes_medicos WHERE id_paciente = %s ORDER BY fecha_reporte DESC", (paciente_id,))
             return cursor.fetchall()
         finally:
-            if connection.is_connected():
+            if connection and connection.open:
                 cursor.close()
                 connection.close()
 
@@ -71,7 +71,7 @@ class ReportesMedicosModel:
             cursor.execute("SELECT * FROM reportes_medicos WHERE id_medico = %s ORDER BY fecha_reporte DESC", (medico_id,))
             return cursor.fetchall()
         finally:
-            if connection.is_connected():
+            if connection and connection.open:
                 cursor.close()
                 connection.close()
 
@@ -99,7 +99,7 @@ class ReportesMedicosModel:
         except Error as e:
             raise e
         finally:
-            if connection.is_connected():
+            if connection and connection.open:
                 cursor.close()
                 connection.close()
 
@@ -114,6 +114,6 @@ class ReportesMedicosModel:
         except Error as e:
             raise e
         finally:
-            if connection.is_connected():
+            if connection and connection.open:
                 cursor.close()
                 connection.close()

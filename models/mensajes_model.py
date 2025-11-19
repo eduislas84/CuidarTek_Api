@@ -22,7 +22,7 @@ class MensajesModel:
         except Error as e:
             raise e
         finally:
-            if connection.is_connected():
+            if connection and connection.open:
                 cursor.close()
                 connection.close()
 
@@ -34,7 +34,7 @@ class MensajesModel:
             cursor.execute("SELECT * FROM mensajes WHERE id_mensaje = %s", (mensaje_id,))
             return cursor.fetchone()
         finally:
-            if connection.is_connected():
+            if connection and connection.open:
                 cursor.close()
                 connection.close()
 
@@ -53,7 +53,7 @@ class MensajesModel:
             """, (usuario_id,))
             return cursor.fetchall()
         finally:
-            if connection.is_connected():
+            if connection and connection.open:
                 cursor.close()
                 connection.close()
 
@@ -72,7 +72,7 @@ class MensajesModel:
             """, (usuario_id,))
             return cursor.fetchall()
         finally:
-            if connection.is_connected():
+            if connection and connection.open:
                 cursor.close()
                 connection.close()
 
@@ -92,7 +92,7 @@ class MensajesModel:
             """, (usuario1_id, usuario2_id, usuario2_id, usuario1_id))
             return cursor.fetchall()
         finally:
-            if connection.is_connected():
+            if connection and connection.open:
                 cursor.close()
                 connection.close()
 
@@ -111,7 +111,7 @@ class MensajesModel:
         except Error as e:
             raise e
         finally:
-            if connection.is_connected():
+            if connection and connection.open:
                 cursor.close()
                 connection.close()
 
@@ -139,7 +139,7 @@ class MensajesModel:
         except Error as e:
             raise e
         finally:
-            if connection.is_connected():
+            if connection and connection.open:
                 cursor.close()
                 connection.close()
 
@@ -154,6 +154,6 @@ class MensajesModel:
         except Error as e:
             raise e
         finally:
-            if connection.is_connected():
+            if connection and connection.open:
                 cursor.close()
                 connection.close()

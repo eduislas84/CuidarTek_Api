@@ -23,7 +23,7 @@ class AlertasModel:
         except Error as e:
             raise e
         finally:
-            if connection.is_connected():
+            if connection and connection.open:
                 cursor.close()
                 connection.close()
 
@@ -35,7 +35,7 @@ class AlertasModel:
             cursor.execute("SELECT * FROM alertas")
             return cursor.fetchall()
         finally:
-            if connection.is_connected():
+            if connection and connection.open:
                 cursor.close()
                 connection.close()
 
@@ -47,7 +47,7 @@ class AlertasModel:
             cursor.execute("SELECT * FROM alertas WHERE id_alerta = %s", (alerta_id,))
             return cursor.fetchone()
         finally:
-            if connection.is_connected():
+            if connection and connection.open:
                 cursor.close()
                 connection.close()
 
@@ -59,7 +59,7 @@ class AlertasModel:
             cursor.execute("SELECT * FROM alertas WHERE id_paciente = %s ORDER BY fecha_programada", (paciente_id,))
             return cursor.fetchall()
         finally:
-            if connection.is_connected():
+            if connection and connection.open:
                 cursor.close()
                 connection.close()
 
@@ -71,7 +71,7 @@ class AlertasModel:
             cursor.execute("SELECT * FROM alertas WHERE estatus = 'pendiente' ORDER BY fecha_programada")
             return cursor.fetchall()
         finally:
-            if connection.is_connected():
+            if connection and connection.open:
                 cursor.close()
                 connection.close()
 
@@ -99,7 +99,7 @@ class AlertasModel:
         except Error as e:
             raise e
         finally:
-            if connection.is_connected():
+            if connection and connection.open:
                 cursor.close()
                 connection.close()
 
@@ -114,6 +114,6 @@ class AlertasModel:
         except Error as e:
             raise e
         finally:
-            if connection.is_connected():
+            if connection and connection.open:
                 cursor.close()
                 connection.close()

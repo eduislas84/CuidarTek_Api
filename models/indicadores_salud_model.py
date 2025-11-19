@@ -26,7 +26,7 @@ class IndicadoresSaludModel:
         except Error as e:
             raise e
         finally:
-            if connection.is_connected():
+            if connection and connection.open:
                 cursor.close()
                 connection.close()
 
@@ -38,7 +38,7 @@ class IndicadoresSaludModel:
             cursor.execute("SELECT * FROM indicadores_salud")
             return cursor.fetchall()
         finally:
-            if connection.is_connected():
+            if connection and connection.open:
                 cursor.close()
                 connection.close()
 
@@ -50,7 +50,7 @@ class IndicadoresSaludModel:
             cursor.execute("SELECT * FROM indicadores_salud WHERE id_indicador = %s", (indicador_id,))
             return cursor.fetchone()
         finally:
-            if connection.is_connected():
+            if connection and connection.open:
                 cursor.close()
                 connection.close()
 
@@ -62,7 +62,7 @@ class IndicadoresSaludModel:
             cursor.execute("SELECT * FROM indicadores_salud WHERE id_paciente = %s ORDER BY fecha_registro DESC", (paciente_id,))
             return cursor.fetchall()
         finally:
-            if connection.is_connected():
+            if connection and connection.open:
                 cursor.close()
                 connection.close()
 
@@ -90,7 +90,7 @@ class IndicadoresSaludModel:
         except Error as e:
             raise e
         finally:
-            if connection.is_connected():
+            if connection and connection.open:
                 cursor.close()
                 connection.close()
 
@@ -105,6 +105,6 @@ class IndicadoresSaludModel:
         except Error as e:
             raise e
         finally:
-            if connection.is_connected():
+            if connection and connection.open:
                 cursor.close()
                 connection.close()

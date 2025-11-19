@@ -21,7 +21,7 @@ class LogAccesosModel:
         except Error as e:
             raise e
         finally:
-            if connection.is_connected():
+            if connection and connection.open:
                 cursor.close()
                 connection.close()
 
@@ -33,7 +33,7 @@ class LogAccesosModel:
             cursor.execute("SELECT * FROM log_accesos ORDER BY fecha_hora DESC")
             return cursor.fetchall()
         finally:
-            if connection.is_connected():
+            if connection and connection.open:
                 cursor.close()
                 connection.close()
 
@@ -45,7 +45,7 @@ class LogAccesosModel:
             cursor.execute("SELECT * FROM log_accesos WHERE id_log = %s", (log_id,))
             return cursor.fetchone()
         finally:
-            if connection.is_connected():
+            if connection and connection.open:
                 cursor.close()
                 connection.close()
 
@@ -57,7 +57,7 @@ class LogAccesosModel:
             cursor.execute("SELECT * FROM log_accesos WHERE id_usuario = %s ORDER BY fecha_hora DESC", (usuario_id,))
             return cursor.fetchall()
         finally:
-            if connection.is_connected():
+            if connection and connection.open:
                 cursor.close()
                 connection.close()
 
@@ -69,7 +69,7 @@ class LogAccesosModel:
             cursor.execute("SELECT * FROM log_accesos WHERE accion = %s ORDER BY fecha_hora DESC", (accion,))
             return cursor.fetchall()
         finally:
-            if connection.is_connected():
+            if connection and connection.open:
                 cursor.close()
                 connection.close()
 
@@ -97,7 +97,7 @@ class LogAccesosModel:
         except Error as e:
             raise e
         finally:
-            if connection.is_connected():
+            if connection and connection.open:
                 cursor.close()
                 connection.close()
 
@@ -112,6 +112,6 @@ class LogAccesosModel:
         except Error as e:
             raise e
         finally:
-            if connection.is_connected():
+            if connection and connection.open:
                 cursor.close()
                 connection.close()

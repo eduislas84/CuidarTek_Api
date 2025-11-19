@@ -22,7 +22,7 @@ class RecomendacionesModel:
         except Error as e:
             raise e
         finally:
-            if connection.is_connected():
+            if connection and connection.open:
                 cursor.close()
                 connection.close()
 
@@ -34,7 +34,7 @@ class RecomendacionesModel:
             cursor.execute("SELECT * FROM recomendaciones")
             return cursor.fetchall()
         finally:
-            if connection.is_connected():
+            if connection and connection.open:
                 cursor.close()
                 connection.close()
 
@@ -46,7 +46,7 @@ class RecomendacionesModel:
             cursor.execute("SELECT * FROM recomendaciones WHERE id_recomendacion = %s", (recomendacion_id,))
             return cursor.fetchone()
         finally:
-            if connection.is_connected():
+            if connection and connection.open:
                 cursor.close()
                 connection.close()
 
@@ -58,7 +58,7 @@ class RecomendacionesModel:
             cursor.execute("SELECT * FROM recomendaciones WHERE id_paciente = %s ORDER BY fecha_generacion DESC", (paciente_id,))
             return cursor.fetchall()
         finally:
-            if connection.is_connected():
+            if connection and connection.open:
                 cursor.close()
                 connection.close()
 
@@ -86,7 +86,7 @@ class RecomendacionesModel:
         except Error as e:
             raise e
         finally:
-            if connection.is_connected():
+            if connection and connection.open:
                 cursor.close()
                 connection.close()
 
@@ -101,6 +101,6 @@ class RecomendacionesModel:
         except Error as e:
             raise e
         finally:
-            if connection.is_connected():
+            if connection and connection.open:
                 cursor.close()
                 connection.close()

@@ -25,7 +25,7 @@ class PacienteModel:
         except Error as e:
             raise e
         finally:
-            if connection.is_connected():
+            if connection and connection.open:
                 cursor.close()
                 connection.close()
 
@@ -37,7 +37,7 @@ class PacienteModel:
             cursor.execute("SELECT * FROM paciente")
             return cursor.fetchall()
         finally:
-            if connection.is_connected():
+            if connection and connection.open:
                 cursor.close()
                 connection.close()
 
@@ -49,7 +49,7 @@ class PacienteModel:
             cursor.execute("SELECT * FROM paciente WHERE id_paciente = %s", (paciente_id,))
             return cursor.fetchone()
         finally:
-            if connection.is_connected():
+            if connection and connection.open:
                 cursor.close()
                 connection.close()
 
@@ -61,7 +61,7 @@ class PacienteModel:
             cursor.execute("SELECT * FROM paciente WHERE id_usuario = %s", (usuario_id,))
             return cursor.fetchone()
         finally:
-            if connection.is_connected():
+            if connection and connection.open:
                 cursor.close()
                 connection.close()
 
@@ -89,7 +89,7 @@ class PacienteModel:
         except Error as e:
             raise e
         finally:
-            if connection.is_connected():
+            if connection and connection.open:
                 cursor.close()
                 connection.close()
 
@@ -104,6 +104,6 @@ class PacienteModel:
         except Error as e:
             raise e
         finally:
-            if connection.is_connected():
+            if connection and connection.open:
                 cursor.close()
                 connection.close()

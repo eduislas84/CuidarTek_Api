@@ -23,7 +23,7 @@ class CitasMedicasModel:
         except Error as e:
             raise e
         finally:
-            if connection.is_connected():
+            if connection and connection.open:
                 cursor.close()
                 connection.close()
 
@@ -35,7 +35,7 @@ class CitasMedicasModel:
             cursor.execute("SELECT * FROM citas_medicas")
             return cursor.fetchall()
         finally:
-            if connection.is_connected():
+            if connection and connection.open:
                 cursor.close()
                 connection.close()
 
@@ -47,7 +47,7 @@ class CitasMedicasModel:
             cursor.execute("SELECT * FROM citas_medicas WHERE id_cita = %s", (cita_id,))
             return cursor.fetchone()
         finally:
-            if connection.is_connected():
+            if connection and connection.open:
                 cursor.close()
                 connection.close()
 
@@ -59,7 +59,7 @@ class CitasMedicasModel:
             cursor.execute("SELECT * FROM citas_medicas WHERE id_paciente = %s ORDER BY fecha_cita", (paciente_id,))
             return cursor.fetchall()
         finally:
-            if connection.is_connected():
+            if connection and connection.open:
                 cursor.close()
                 connection.close()
 
@@ -71,7 +71,7 @@ class CitasMedicasModel:
             cursor.execute("SELECT * FROM citas_medicas WHERE id_medico = %s ORDER BY fecha_cita", (medico_id,))
             return cursor.fetchall()
         finally:
-            if connection.is_connected():
+            if connection and connection.open:
                 cursor.close()
                 connection.close()
 
@@ -83,7 +83,7 @@ class CitasMedicasModel:
             cursor.execute("SELECT * FROM citas_medicas WHERE estatus = 'programada' ORDER BY fecha_cita")
             return cursor.fetchall()
         finally:
-            if connection.is_connected():
+            if connection and connection.open:
                 cursor.close()
                 connection.close()
 
@@ -111,7 +111,7 @@ class CitasMedicasModel:
         except Error as e:
             raise e
         finally:
-            if connection.is_connected():
+            if connection and connection.open:
                 cursor.close()
                 connection.close()
 
@@ -126,6 +126,6 @@ class CitasMedicasModel:
         except Error as e:
             raise e
         finally:
-            if connection.is_connected():
+            if connection and connection.open:
                 cursor.close()
                 connection.close()
