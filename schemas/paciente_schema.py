@@ -1,3 +1,4 @@
+# paciente_schema.py
 from pydantic import BaseModel
 from typing import Optional
 
@@ -27,4 +28,4 @@ class Paciente(PacienteBase):
     id_usuario: int
 
     class Config:
-        from_attributes = True
+        orm_mode = True
