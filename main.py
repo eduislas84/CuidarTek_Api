@@ -25,14 +25,12 @@ app = FastAPI(
     version="2.0.0"
 )
 
-# ------------------------------------------------
-# 🔥 CORS ES OBLIGATORIO para permitir OPTIONS
-# ------------------------------------------------
+# CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Cambiar a ["http://localhost:3000"] si quieres
+    allow_origins=["*"],
     allow_credentials=True,
-    allow_methods=["*"],  # ← Permite OPTIONS, POST, GET, DELETE, etc.
+    allow_methods=["*"],
     allow_headers=["*"],
 )
 
@@ -63,7 +61,6 @@ app.include_router(log_accesos_controller.router)
 app.include_router(mensajes_controller.router)
 app.include_router(paciente_medico_controller.router)
 app.include_router(medico_controller.router)
-
 
 @app.get("/status/database")
 async def verificar_estado_db():
