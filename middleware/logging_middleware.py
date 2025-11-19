@@ -58,15 +58,16 @@ class LoggingMiddleware(BaseHTTPMiddleware):
         method = request.method
         path = request.url.path
         
+        # ✅ ACCIONES MÁS CORTAS para evitar el error de truncamiento
         if method == "GET":
-            return "consulta_datos"
+            return "consulta"
         elif method == "POST":
             if "/auth/" in path:
-                return "inicio_sesion"
-            return "creacion_datos"
+                return "login"
+            return "crear"
         elif method == "PUT":
-            return "actualización_datos"
+            return "actualizar"
         elif method == "DELETE":
-            return "eliminación"
+            return "eliminar"
         else:
-            return "otra_accion"
+            return "otra"

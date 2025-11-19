@@ -8,18 +8,43 @@ load_dotenv()
 
 class Database:
     def __init__(self):
+        # Usar defaultdb que es la base de datos que Aiven provee
         self.host = os.getenv("DB_HOST")
         self.user = os.getenv("DB_USER")
         self.password = os.getenv("DB_PASSWORD")
-        self.database = os.getenv("DB_NAME", "cuidartek_db")
+        self.database = os.getenv("DB_NAME", "defaultdb")  # Aiven usa defaultdb
         self.port = int(os.getenv("DB_PORT", "3306"))
+        
+        self._check_environment_variables()
+
+    def _check_environment_variables(self):
+        """Verifica que todas las variables de entorno necesarias estén configuradas"""
+        required_vars = {
+            "DB_HOST": self.host,
+            "DB_USER": self.user, 
+            "DB_PASSWORD": self.password,
+            "DB_NAME": self.database
+        }
+        
+        missing_vars = [var for var, value in required_vars.items() if not value]
+        if missing_vars:
+            print(f"⚠️  Variables de entorno faltantes: {', '.join(missing_vars)}")
+        else:
+            print(f"✅ Variables configuradas - Conectando a: {self.host}:{self.port}/{self.database}")
 
     def get_connection(self):
         try:
-            # Configuración SSL para Aiven
+            # Verificar que tengamos todas las variables necesarias
+            if not all([self.host, self.user, self.password, self.database]):
+                print("❌ No se puede conectar: variables de BD incompletas")
+                return None
+            
+            # Configuración SSL para Aiven (REQUIRED como indica la URI)
             ssl_context = ssl.create_default_context()
             ssl_context.check_hostname = False
             ssl_context.verify_mode = ssl.CERT_NONE
+            
+            print(f"🔗 Conectando a Aiven: {self.user}@{self.host}:{self.port}/{self.database}")
             
             connection = pymysql.connect(
                 host=self.host,
@@ -29,19 +54,25 @@ class Database:
                 port=self.port,
                 cursorclass=pymysql.cursors.DictCursor,
                 ssl=ssl_context,
-                connect_timeout=10,
+                connect_timeout=15,
                 autocommit=True
             )
+            
+            print("✅ ¡Conectado a Aiven MySQL exitosamente!")
             return connection
+            
         except Error as e:
-            print(f"Error connecting to MySQL: {e}")
+            print(f"❌ Error de conexión MySQL: {e}")
+            return None
+        except Exception as e:
+            print(f"❌ Error inesperado: {e}")
             return None
 
     def create_database_and_tables(self):
-        """Crea la base de datos y las tablas si no existen"""
+        """Crea las tablas en la base de datos defaultdb de Aiven"""
         connection = None
         try:
-            print("🏗️ Iniciando creación de tablas...")
+            print("🏗️  Iniciando creación de tablas en defaultdb...")
             
             connection = self.get_connection()
             if not connection:
@@ -51,9 +82,10 @@ class Database:
             cursor = connection.cursor()
             
             # Verificar conexión
-            cursor.execute("SELECT DATABASE() as current_db")
+            cursor.execute("SELECT DATABASE() as current_db, NOW() as server_time")
             db_info = cursor.fetchone()
             print(f"📊 Conectado a: {db_info['current_db']}")
+            print(f"⏰ Hora del servidor: {db_info['server_time']}")
             
             # Crear tabla Usuario
             cursor.execute("""
@@ -194,12 +226,12 @@ class Database:
             """)
             print("✅ Tabla 'sesiones_wearable' creada/verificada")
             
-            # Crear tabla Log_Accesos
+            # ✅ CORREGIDO: Tabla Log_Accesos con VARCHAR en lugar de ENUM
             cursor.execute("""
                 CREATE TABLE IF NOT EXISTS log_accesos (
                     id_log INT AUTO_INCREMENT PRIMARY KEY,
                     id_usuario INT NOT NULL,
-                    accion ENUM('inicio_sesion', 'actualización_datos', 'eliminación', 'exportación') NOT NULL,
+                    accion VARCHAR(50) NOT NULL,
                     fecha_hora TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                     ip_origen VARCHAR(45),
                     FOREIGN KEY (id_usuario) REFERENCES usuario(id_usuario) ON DELETE CASCADE
@@ -224,7 +256,7 @@ class Database:
             """)
             print("✅ Tabla 'mensajes' creada/verificada")
             
-            # Crear tabla Paciente_Medico
+            # Crear tabla Paciente_Medico (relaciones)
             cursor.execute("""
                 CREATE TABLE IF NOT EXISTS paciente_medico (
                     id_relacion INT AUTO_INCREMENT PRIMARY KEY,
@@ -241,7 +273,7 @@ class Database:
             """)
             print("✅ Tabla 'paciente_medico' creada/verificada")
             
-            # Crear tabla Medico
+            # Crear tabla Medico (perfil médico)
             cursor.execute("""
                 CREATE TABLE IF NOT EXISTS medico (
                     id_medico INT AUTO_INCREMENT PRIMARY KEY,
@@ -260,7 +292,7 @@ class Database:
             """)
             print("✅ Tabla 'medico' creada/verificada")
             
-            print("🎉 ¡Todas las tablas creadas exitosamente!")
+            print("🎉 ¡Todas las tablas creadas exitosamente en Aiven!")
             
         except Error as e:
             print(f"❌ Error creando tablas: {e}")
