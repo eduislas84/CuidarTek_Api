@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException, Depends
 from models.paciente_model import PacienteModel
 from schemas.paciente_schema import Paciente, PacienteCreate, PacienteUpdate
-from auth import get_current_active_user
+from auth import require_role, require_any_user, get_current_active_user
 from typing import List
 
 router = APIRouter(prefix="/pacientes", tags=["pacientes"])
@@ -37,20 +37,11 @@ async def crear_paciente(
             raise e
         raise HTTPException(status_code=500, detail=str(e))
 
-@router.get("/", response_model=List[Paciente])
-async def listar_pacientes(current_user: dict = Depends(get_current_active_user)):
+@router.get("/", response_model=List[Paciente], dependencies=[Depends(require_role(["medico", "admin"]))])
+async def listar_pacientes():
     try:
-        # ✅ Solo médicos y admin pueden listar todos los pacientes
-        if current_user["rol"] not in ["medico", "admin"]:
-            raise HTTPException(
-                status_code=403,
-                detail="No tienes permisos para listar pacientes"
-            )
-        
         pacientes = PacienteModel.get_all()
         return pacientes
-    except HTTPException:
-        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -75,9 +66,9 @@ async def obtener_paciente(
                 )
         
         return paciente
-    except HTTPException:
-        raise
     except Exception as e:
+        if "detail" in str(e):
+            raise e
         raise HTTPException(status_code=500, detail=str(e))
 
 @router.get("/usuario/{usuario_id}", response_model=Paciente)
@@ -97,9 +88,9 @@ async def obtener_paciente_por_usuario(
         if not paciente:
             raise HTTPException(status_code=404, detail="Paciente no encontrado para este usuario")
         return paciente
-    except HTTPException:
-        raise
     except Exception as e:
+        if "detail" in str(e):
+            raise e
         raise HTTPException(status_code=500, detail=str(e))
 
 @router.put("/{paciente_id}", response_model=Paciente)
@@ -125,27 +116,15 @@ async def actualizar_paciente(
                 )
         
         paciente_actualizado = PacienteModel.update(paciente_id, paciente.dict(exclude_unset=True))
-        if not paciente_actualizado:
-            raise HTTPException(status_code=500, detail="Error al actualizar paciente")
         return paciente_actualizado
-    except HTTPException:
-        raise
     except Exception as e:
+        if "detail" in str(e):
+            raise e
         raise HTTPException(status_code=500, detail=str(e))
 
-@router.delete("/{paciente_id}")
-async def eliminar_paciente(
-    paciente_id: int,
-    current_user: dict = Depends(get_current_active_user)
-):
+@router.delete("/{paciente_id}", dependencies=[Depends(require_role(["medico", "admin"]))])
+async def eliminar_paciente(paciente_id: int):
     try:
-        # ✅ Solo médicos y admin pueden eliminar pacientes
-        if current_user["rol"] not in ["medico", "admin"]:
-            raise HTTPException(
-                status_code=403,
-                detail="No tienes permisos para eliminar pacientes"
-            )
-        
         paciente_existente = PacienteModel.get_by_id(paciente_id)
         if not paciente_existente:
             raise HTTPException(status_code=404, detail="Paciente no encontrado")
@@ -155,7 +134,5 @@ async def eliminar_paciente(
             raise HTTPException(status_code=500, detail="Error al eliminar paciente")
         
         return {"message": "Paciente eliminado correctamente"}
-    except HTTPException:
-        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
