@@ -7,7 +7,7 @@ class PacienteMedicoModel:
     def create_solicitud(solicitud_data: dict):
         connection = db.get_connection()
         try:
-            cursor = connection.cursor(dictionary=True)
+            cursor = connection.cursor()
             cursor.execute(
                 """INSERT INTO paciente_medico 
                 (id_paciente, id_medico, estatus, notas) 
@@ -32,7 +32,7 @@ class PacienteMedicoModel:
     def get_medicos_del_paciente(paciente_id: int):
         connection = db.get_connection()
         try:
-            cursor = connection.cursor(dictionary=True)
+            cursor = connection.cursor()
             cursor.execute("""
                 SELECT pm.*, um.nombre as nombre_medico, um.correo as correo_medico
                 FROM paciente_medico pm
@@ -51,7 +51,7 @@ class PacienteMedicoModel:
     def actualizar_estatus(relacion_id: int, nuevo_estatus: str, notas: str = None):
         connection = db.get_connection()
         try:
-            cursor = connection.cursor(dictionary=True)
+            cursor = connection.cursor()
             
             if notas:
                 cursor.execute(
@@ -78,7 +78,7 @@ class PacienteMedicoModel:
     def verificar_relacion(paciente_id: int, medico_id: int):
         connection = db.get_connection()
         try:
-            cursor = connection.cursor(dictionary=True)
+            cursor = connection.cursor()
             cursor.execute("""
                 SELECT * FROM paciente_medico 
                 WHERE id_paciente = %s AND id_medico = %s
@@ -109,7 +109,7 @@ class PacienteMedicoModel:
     def get_medicos_del_paciente(paciente_id: int):
         connection = db.get_connection()
         try:
-            cursor = connection.cursor(dictionary=True)
+            cursor = connection.cursor()
             cursor.execute("""
                 SELECT pm.*, 
                     u.id_usuario,
@@ -138,7 +138,7 @@ class PacienteMedicoModel:
     def get_solicitudes_pendientes_medico(medico_id: int):
         connection = db.get_connection()
         try:
-            cursor = connection.cursor(dictionary=True)
+            cursor = connection.cursor()
             cursor.execute("""
                 SELECT pm.*, 
                     p.id_paciente,
@@ -167,7 +167,7 @@ class PacienteMedicoModel:
     def get_pacientes_del_medico(medico_id: int):
         connection = db.get_connection()
         try:
-            cursor = connection.cursor(dictionary=True)
+            cursor = connection.cursor()
             cursor.execute("""
                 SELECT pm.*, 
                     p.id_paciente,
@@ -198,7 +198,7 @@ class PacienteMedicoModel:
     def get_by_id(relacion_id: int):
         connection = db.get_connection()
         try:
-            cursor = connection.cursor(dictionary=True)
+            cursor = connection.cursor()
             cursor.execute("""
                 SELECT pm.*, 
                     p.id_usuario as id_usuario_paciente, 

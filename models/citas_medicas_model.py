@@ -8,7 +8,7 @@ class CitasMedicasModel:
     def create(cita_data: dict):
         connection = db.get_connection()
         try:
-            cursor = connection.cursor(dictionary=True)
+            cursor = connection.cursor()
             cursor.execute(
                 """INSERT INTO citas_medicas (id_paciente, id_medico, fecha_cita, motivo, observaciones, estatus) 
                 VALUES (%s, %s, %s, %s, %s, %s)""",
@@ -31,7 +31,7 @@ class CitasMedicasModel:
     def get_all():
         connection = db.get_connection()
         try:
-            cursor = connection.cursor(dictionary=True)
+            cursor = connection.cursor()
             cursor.execute("SELECT * FROM citas_medicas")
             return cursor.fetchall()
         finally:
@@ -43,7 +43,7 @@ class CitasMedicasModel:
     def get_by_id(cita_id: int):
         connection = db.get_connection()
         try:
-            cursor = connection.cursor(dictionary=True)
+            cursor = connection.cursor()
             cursor.execute("SELECT * FROM citas_medicas WHERE id_cita = %s", (cita_id,))
             return cursor.fetchone()
         finally:
@@ -55,7 +55,7 @@ class CitasMedicasModel:
     def get_by_paciente_id(paciente_id: int):
         connection = db.get_connection()
         try:
-            cursor = connection.cursor(dictionary=True)
+            cursor = connection.cursor()
             cursor.execute("SELECT * FROM citas_medicas WHERE id_paciente = %s ORDER BY fecha_cita", (paciente_id,))
             return cursor.fetchall()
         finally:
@@ -67,7 +67,7 @@ class CitasMedicasModel:
     def get_by_medico_id(medico_id: int):
         connection = db.get_connection()
         try:
-            cursor = connection.cursor(dictionary=True)
+            cursor = connection.cursor()
             cursor.execute("SELECT * FROM citas_medicas WHERE id_medico = %s ORDER BY fecha_cita", (medico_id,))
             return cursor.fetchall()
         finally:
@@ -79,7 +79,7 @@ class CitasMedicasModel:
     def get_programadas():
         connection = db.get_connection()
         try:
-            cursor = connection.cursor(dictionary=True)
+            cursor = connection.cursor()
             cursor.execute("SELECT * FROM citas_medicas WHERE estatus = 'programada' ORDER BY fecha_cita")
             return cursor.fetchall()
         finally:
@@ -91,7 +91,7 @@ class CitasMedicasModel:
     def update(cita_id: int, cita_data: dict):
         connection = db.get_connection()
         try:
-            cursor = connection.cursor(dictionary=True)
+            cursor = connection.cursor()
             
             update_fields = []
             values = []

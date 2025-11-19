@@ -12,7 +12,7 @@ class UsuarioModel:
             if not connection or not connection.open:
                 return None
                 
-            cursor = connection.cursor(dictionary=True)
+            cursor = connection.cursor()
             cursor.execute("SELECT * FROM usuario WHERE correo = %s", (email,))
             return cursor.fetchone()
         except Error as e:
@@ -32,7 +32,7 @@ class UsuarioModel:
             if not connection or not connection.open:
                 return None
                 
-            cursor = connection.cursor(dictionary=True)
+            cursor = connection.cursor()
             cursor.execute("""
                 INSERT INTO usuario (nombre, correo, password, rol, estatus)
                 VALUES (%s, %s, %s, %s, %s)
@@ -66,7 +66,7 @@ class UsuarioModel:
             if not connection or not connection.open:
                 return None
                 
-            cursor = connection.cursor(dictionary=True)
+            cursor = connection.cursor()
             cursor.execute("SELECT * FROM usuario WHERE id_usuario = %s", (usuario_id,))
             return cursor.fetchone()
         except Error as e:
@@ -86,7 +86,7 @@ class UsuarioModel:
             if not connection or not connection.open:
                 return None
                 
-            cursor = connection.cursor(dictionary=True)
+            cursor = connection.cursor()
             
             update_fields = []
             values = []
@@ -120,7 +120,7 @@ class UsuarioModel:
             if not connection or not connection.open:
                 return []
                 
-            cursor = connection.cursor(dictionary=True)
+            cursor = connection.cursor()
             cursor.execute("SELECT * FROM usuario ORDER BY fecha_registro DESC")
             return cursor.fetchall()
         except Error as e:

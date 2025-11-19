@@ -12,7 +12,7 @@ class LogAccesosModel:
                 print("❌ No hay conexión para crear log")
                 return None
                 
-            cursor = connection.cursor(dictionary=True)
+            cursor = connection.cursor()
             cursor.execute(
                 """INSERT INTO log_accesos (id_usuario, accion, ip_origen) 
                 VALUES (%s, %s, %s)""",
@@ -39,7 +39,7 @@ class LogAccesosModel:
             if not connection or not connection.open:
                 return []
                 
-            cursor = connection.cursor(dictionary=True)
+            cursor = connection.cursor()
             cursor.execute("SELECT * FROM log_accesos ORDER BY fecha_hora DESC")
             return cursor.fetchall()
         except Error as e:
@@ -59,7 +59,7 @@ class LogAccesosModel:
             if not connection or not connection.open:
                 return None
                 
-            cursor = connection.cursor(dictionary=True)
+            cursor = connection.cursor()
             cursor.execute("SELECT * FROM log_accesos WHERE id_log = %s", (log_id,))
             return cursor.fetchone()
         except Error as e:
@@ -79,7 +79,7 @@ class LogAccesosModel:
             if not connection or not connection.open:
                 return []
                 
-            cursor = connection.cursor(dictionary=True)
+            cursor = connection.cursor()
             cursor.execute("SELECT * FROM log_accesos WHERE id_usuario = %s ORDER BY fecha_hora DESC", (usuario_id,))
             return cursor.fetchall()
         except Error as e:
@@ -99,7 +99,7 @@ class LogAccesosModel:
             if not connection or not connection.open:
                 return []
                 
-            cursor = connection.cursor(dictionary=True)
+            cursor = connection.cursor()
             cursor.execute("SELECT * FROM log_accesos WHERE accion = %s ORDER BY fecha_hora DESC", (accion,))
             return cursor.fetchall()
         except Error as e:
@@ -119,7 +119,7 @@ class LogAccesosModel:
             if not connection or not connection.open:
                 return None
                 
-            cursor = connection.cursor(dictionary=True)
+            cursor = connection.cursor()
             
             update_fields = []
             values = []

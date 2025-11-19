@@ -9,7 +9,7 @@ class SesionesWearableModel:
     def create(sesion_data: dict):
         connection = db.get_connection()
         try:
-            cursor = connection.cursor(dictionary=True)
+            cursor = connection.cursor()
             
             # Convertir datos_recibidos a JSON si existe
             datos_recibidos = sesion_data.get('datos_recibidos')
@@ -37,7 +37,7 @@ class SesionesWearableModel:
     def get_all():
         connection = db.get_connection()
         try:
-            cursor = connection.cursor(dictionary=True)
+            cursor = connection.cursor()
             cursor.execute("SELECT * FROM sesiones_wearable")
             return cursor.fetchall()
         finally:
@@ -49,7 +49,7 @@ class SesionesWearableModel:
     def get_by_id(sesion_id: int):
         connection = db.get_connection()
         try:
-            cursor = connection.cursor(dictionary=True)
+            cursor = connection.cursor()
             cursor.execute("SELECT * FROM sesiones_wearable WHERE id_sesion = %s", (sesion_id,))
             return cursor.fetchone()
         finally:
@@ -61,7 +61,7 @@ class SesionesWearableModel:
     def get_by_paciente_id(paciente_id: int):
         connection = db.get_connection()
         try:
-            cursor = connection.cursor(dictionary=True)
+            cursor = connection.cursor()
             cursor.execute("SELECT * FROM sesiones_wearable WHERE id_paciente = %s ORDER BY fecha_sincronizacion DESC", (paciente_id,))
             return cursor.fetchall()
         finally:
@@ -73,7 +73,7 @@ class SesionesWearableModel:
     def get_by_dispositivo(dispositivo: str):
         connection = db.get_connection()
         try:
-            cursor = connection.cursor(dictionary=True)
+            cursor = connection.cursor()
             cursor.execute("SELECT * FROM sesiones_wearable WHERE dispositivo = %s ORDER BY fecha_sincronizacion DESC", (dispositivo,))
             return cursor.fetchall()
         finally:
@@ -85,7 +85,7 @@ class SesionesWearableModel:
     def update(sesion_id: int, sesion_data: dict):
         connection = db.get_connection()
         try:
-            cursor = connection.cursor(dictionary=True)
+            cursor = connection.cursor()
             
             # Convertir datos_recibidos a JSON si existe
             if 'datos_recibidos' in sesion_data and sesion_data['datos_recibidos'] is not None:

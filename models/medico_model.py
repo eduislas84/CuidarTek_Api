@@ -7,7 +7,7 @@ class MedicoModel:
     def create(medico_data: dict):
         connection = db.get_connection()
         try:
-            cursor = connection.cursor(dictionary=True)
+            cursor = connection.cursor()
             cursor.execute(
                 """INSERT INTO medico 
                 (id_usuario, especialidad, cedula_profesional, telefono_consultorio, 
@@ -34,7 +34,7 @@ class MedicoModel:
     def get_all():
         connection = db.get_connection()
         try:
-            cursor = connection.cursor(dictionary=True)
+            cursor = connection.cursor()
             cursor.execute("""
                 SELECT m.*, u.nombre, u.correo, u.rol
                 FROM medico m
@@ -51,7 +51,7 @@ class MedicoModel:
     def get_by_id(medico_id: int):
         connection = db.get_connection()
         try:
-            cursor = connection.cursor(dictionary=True)
+            cursor = connection.cursor()
             cursor.execute("""
                 SELECT m.*, u.nombre, u.correo, u.rol
                 FROM medico m
@@ -68,7 +68,7 @@ class MedicoModel:
     def get_by_user_id(usuario_id: int):
         connection = db.get_connection()
         try:
-            cursor = connection.cursor(dictionary=True)
+            cursor = connection.cursor()
             cursor.execute("""
                 SELECT m.*, u.nombre, u.correo, u.rol
                 FROM medico m
@@ -85,7 +85,7 @@ class MedicoModel:
     def get_medicos_activos():
         connection = db.get_connection()
         try:
-            cursor = connection.cursor(dictionary=True)
+            cursor = connection.cursor()
             cursor.execute("""
                 SELECT m.*, u.nombre, u.correo, u.rol,
                        (SELECT COUNT(*) FROM paciente_medico pm 
@@ -104,7 +104,7 @@ class MedicoModel:
     def update(medico_id: int, medico_data: dict):
         connection = db.get_connection()
         try:
-            cursor = connection.cursor(dictionary=True)
+            cursor = connection.cursor()
             
             update_fields = []
             values = []

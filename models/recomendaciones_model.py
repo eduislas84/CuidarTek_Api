@@ -8,7 +8,7 @@ class RecomendacionesModel:
     def create(recomendacion_data: dict):
         connection = db.get_connection()
         try:
-            cursor = connection.cursor(dictionary=True)
+            cursor = connection.cursor()
             cursor.execute(
                 """INSERT INTO recomendaciones (id_paciente, contenido, origen) 
                 VALUES (%s, %s, %s)""",
@@ -30,7 +30,7 @@ class RecomendacionesModel:
     def get_all():
         connection = db.get_connection()
         try:
-            cursor = connection.cursor(dictionary=True)
+            cursor = connection.cursor()
             cursor.execute("SELECT * FROM recomendaciones")
             return cursor.fetchall()
         finally:
@@ -42,7 +42,7 @@ class RecomendacionesModel:
     def get_by_id(recomendacion_id: int):
         connection = db.get_connection()
         try:
-            cursor = connection.cursor(dictionary=True)
+            cursor = connection.cursor()
             cursor.execute("SELECT * FROM recomendaciones WHERE id_recomendacion = %s", (recomendacion_id,))
             return cursor.fetchone()
         finally:
@@ -54,7 +54,7 @@ class RecomendacionesModel:
     def get_by_paciente_id(paciente_id: int):
         connection = db.get_connection()
         try:
-            cursor = connection.cursor(dictionary=True)
+            cursor = connection.cursor()
             cursor.execute("SELECT * FROM recomendaciones WHERE id_paciente = %s ORDER BY fecha_generacion DESC", (paciente_id,))
             return cursor.fetchall()
         finally:
@@ -66,7 +66,7 @@ class RecomendacionesModel:
     def update(recomendacion_id: int, recomendacion_data: dict):
         connection = db.get_connection()
         try:
-            cursor = connection.cursor(dictionary=True)
+            cursor = connection.cursor()
             
             update_fields = []
             values = []

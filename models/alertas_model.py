@@ -8,7 +8,7 @@ class AlertasModel:
     def create(alerta_data: dict):
         connection = db.get_connection()
         try:
-            cursor = connection.cursor(dictionary=True)
+            cursor = connection.cursor()
             cursor.execute(
                 """INSERT INTO alertas (id_paciente, tipo_alerta, descripcion, fecha_programada, estatus) 
                 VALUES (%s, %s, %s, %s, %s)""",
@@ -31,7 +31,7 @@ class AlertasModel:
     def get_all():
         connection = db.get_connection()
         try:
-            cursor = connection.cursor(dictionary=True)
+            cursor = connection.cursor()
             cursor.execute("SELECT * FROM alertas")
             return cursor.fetchall()
         finally:
@@ -43,7 +43,7 @@ class AlertasModel:
     def get_by_id(alerta_id: int):
         connection = db.get_connection()
         try:
-            cursor = connection.cursor(dictionary=True)
+            cursor = connection.cursor()
             cursor.execute("SELECT * FROM alertas WHERE id_alerta = %s", (alerta_id,))
             return cursor.fetchone()
         finally:
@@ -55,7 +55,7 @@ class AlertasModel:
     def get_by_paciente_id(paciente_id: int):
         connection = db.get_connection()
         try:
-            cursor = connection.cursor(dictionary=True)
+            cursor = connection.cursor()
             cursor.execute("SELECT * FROM alertas WHERE id_paciente = %s ORDER BY fecha_programada", (paciente_id,))
             return cursor.fetchall()
         finally:
@@ -67,7 +67,7 @@ class AlertasModel:
     def get_pendientes():
         connection = db.get_connection()
         try:
-            cursor = connection.cursor(dictionary=True)
+            cursor = connection.cursor()
             cursor.execute("SELECT * FROM alertas WHERE estatus = 'pendiente' ORDER BY fecha_programada")
             return cursor.fetchall()
         finally:
@@ -79,7 +79,7 @@ class AlertasModel:
     def update(alerta_id: int, alerta_data: dict):
         connection = db.get_connection()
         try:
-            cursor = connection.cursor(dictionary=True)
+            cursor = connection.cursor()
             
             update_fields = []
             values = []

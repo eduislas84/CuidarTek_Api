@@ -8,7 +8,7 @@ class IndicadoresSaludModel:
     def create(indicador_data: dict):
         connection = db.get_connection()
         try:
-            cursor = connection.cursor(dictionary=True)
+            cursor = connection.cursor()
             cursor.execute(
                 """INSERT INTO indicadores_salud (id_paciente, presion_sistolica, presion_diastolica, 
                 glucosa, peso, frecuencia_cardiaca, estado_animo, actividad_fisica, fuente_dato) 
@@ -34,7 +34,7 @@ class IndicadoresSaludModel:
     def get_all():
         connection = db.get_connection()
         try:
-            cursor = connection.cursor(dictionary=True)
+            cursor = connection.cursor()
             cursor.execute("SELECT * FROM indicadores_salud")
             return cursor.fetchall()
         finally:
@@ -46,7 +46,7 @@ class IndicadoresSaludModel:
     def get_by_id(indicador_id: int):
         connection = db.get_connection()
         try:
-            cursor = connection.cursor(dictionary=True)
+            cursor = connection.cursor()
             cursor.execute("SELECT * FROM indicadores_salud WHERE id_indicador = %s", (indicador_id,))
             return cursor.fetchone()
         finally:
@@ -58,7 +58,7 @@ class IndicadoresSaludModel:
     def get_by_paciente_id(paciente_id: int):
         connection = db.get_connection()
         try:
-            cursor = connection.cursor(dictionary=True)
+            cursor = connection.cursor()
             cursor.execute("SELECT * FROM indicadores_salud WHERE id_paciente = %s ORDER BY fecha_registro DESC", (paciente_id,))
             return cursor.fetchall()
         finally:
@@ -70,7 +70,7 @@ class IndicadoresSaludModel:
     def update(indicador_id: int, indicador_data: dict):
         connection = db.get_connection()
         try:
-            cursor = connection.cursor(dictionary=True)
+            cursor = connection.cursor()
             
             update_fields = []
             values = []

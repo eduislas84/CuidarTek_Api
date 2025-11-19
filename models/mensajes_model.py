@@ -7,7 +7,7 @@ class MensajesModel:
     def create(mensaje_data: dict):
         connection = db.get_connection()
         try:
-            cursor = connection.cursor(dictionary=True)
+            cursor = connection.cursor()
             cursor.execute(
                 """INSERT INTO mensajes 
                 (id_remitente, id_destinatario, asunto, contenido) 
@@ -30,7 +30,7 @@ class MensajesModel:
     def get_by_id(mensaje_id: int):
         connection = db.get_connection()
         try:
-            cursor = connection.cursor(dictionary=True)
+            cursor = connection.cursor()
             cursor.execute("SELECT * FROM mensajes WHERE id_mensaje = %s", (mensaje_id,))
             return cursor.fetchone()
         finally:
@@ -42,7 +42,7 @@ class MensajesModel:
     def get_by_remitente(usuario_id: int):
         connection = db.get_connection()
         try:
-            cursor = connection.cursor(dictionary=True)
+            cursor = connection.cursor()
             cursor.execute("""
                 SELECT m.*, u1.nombre as nombre_remitente, u2.nombre as nombre_destinatario
                 FROM mensajes m
@@ -61,7 +61,7 @@ class MensajesModel:
     def get_by_destinatario(usuario_id: int):
         connection = db.get_connection()
         try:
-            cursor = connection.cursor(dictionary=True)
+            cursor = connection.cursor()
             cursor.execute("""
                 SELECT m.*, u1.nombre as nombre_remitente, u2.nombre as nombre_destinatario
                 FROM mensajes m
@@ -80,7 +80,7 @@ class MensajesModel:
     def get_conversacion(usuario1_id: int, usuario2_id: int):
         connection = db.get_connection()
         try:
-            cursor = connection.cursor(dictionary=True)
+            cursor = connection.cursor()
             cursor.execute("""
                 SELECT m.*, u1.nombre as nombre_remitente, u2.nombre as nombre_destinatario
                 FROM mensajes m
@@ -100,7 +100,7 @@ class MensajesModel:
     def marcar_como_leido(mensaje_id: int):
         connection = db.get_connection()
         try:
-            cursor = connection.cursor(dictionary=True)
+            cursor = connection.cursor()
             cursor.execute(
                 "UPDATE mensajes SET leido = TRUE, fecha_leido = CURRENT_TIMESTAMP WHERE id_mensaje = %s",
                 (mensaje_id,)
@@ -119,7 +119,7 @@ class MensajesModel:
     def update(mensaje_id: int, mensaje_data: dict):
         connection = db.get_connection()
         try:
-            cursor = connection.cursor(dictionary=True)
+            cursor = connection.cursor()
             
             update_fields = []
             values = []

@@ -8,7 +8,7 @@ class PacienteModel:
     def create(paciente_data: dict):
         connection = db.get_connection()
         try:
-            cursor = connection.cursor(dictionary=True)
+            cursor = connection.cursor()
             cursor.execute(
                 """INSERT INTO paciente (id_usuario, edad, sexo, peso_actual, altura, 
                 enfermedades_cronicas, medicamentos, doctor_asignado) 
@@ -33,7 +33,7 @@ class PacienteModel:
     def get_all():
         connection = db.get_connection()
         try:
-            cursor = connection.cursor(dictionary=True)
+            cursor = connection.cursor()
             cursor.execute("SELECT * FROM paciente")
             return cursor.fetchall()
         finally:
@@ -45,7 +45,7 @@ class PacienteModel:
     def get_by_id(paciente_id: int):
         connection = db.get_connection()
         try:
-            cursor = connection.cursor(dictionary=True)
+            cursor = connection.cursor()
             cursor.execute("SELECT * FROM paciente WHERE id_paciente = %s", (paciente_id,))
             return cursor.fetchone()
         finally:
@@ -57,7 +57,7 @@ class PacienteModel:
     def get_by_usuario_id(usuario_id: int):
         connection = db.get_connection()
         try:
-            cursor = connection.cursor(dictionary=True)
+            cursor = connection.cursor()
             cursor.execute("SELECT * FROM paciente WHERE id_usuario = %s", (usuario_id,))
             return cursor.fetchone()
         finally:
@@ -69,7 +69,7 @@ class PacienteModel:
     def update(paciente_id: int, paciente_data: dict):
         connection = db.get_connection()
         try:
-            cursor = connection.cursor(dictionary=True)
+            cursor = connection.cursor()
             
             update_fields = []
             values = []

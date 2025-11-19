@@ -8,7 +8,7 @@ class ReportesMedicosModel:
     def create(reporte_data: dict):
         connection = db.get_connection()
         try:
-            cursor = connection.cursor(dictionary=True)
+            cursor = connection.cursor()
             cursor.execute(
                 """INSERT INTO reportes_medicos (id_paciente, id_medico, descripcion_general, diagnostico, recomendaciones_medicas) 
                 VALUES (%s, %s, %s, %s, %s)""",
@@ -31,7 +31,7 @@ class ReportesMedicosModel:
     def get_all():
         connection = db.get_connection()
         try:
-            cursor = connection.cursor(dictionary=True)
+            cursor = connection.cursor()
             cursor.execute("SELECT * FROM reportes_medicos")
             return cursor.fetchall()
         finally:
@@ -43,7 +43,7 @@ class ReportesMedicosModel:
     def get_by_id(reporte_id: int):
         connection = db.get_connection()
         try:
-            cursor = connection.cursor(dictionary=True)
+            cursor = connection.cursor()
             cursor.execute("SELECT * FROM reportes_medicos WHERE id_reporte = %s", (reporte_id,))
             return cursor.fetchone()
         finally:
@@ -55,7 +55,7 @@ class ReportesMedicosModel:
     def get_by_paciente_id(paciente_id: int):
         connection = db.get_connection()
         try:
-            cursor = connection.cursor(dictionary=True)
+            cursor = connection.cursor()
             cursor.execute("SELECT * FROM reportes_medicos WHERE id_paciente = %s ORDER BY fecha_reporte DESC", (paciente_id,))
             return cursor.fetchall()
         finally:
@@ -67,7 +67,7 @@ class ReportesMedicosModel:
     def get_by_medico_id(medico_id: int):
         connection = db.get_connection()
         try:
-            cursor = connection.cursor(dictionary=True)
+            cursor = connection.cursor()
             cursor.execute("SELECT * FROM reportes_medicos WHERE id_medico = %s ORDER BY fecha_reporte DESC", (medico_id,))
             return cursor.fetchall()
         finally:
@@ -79,7 +79,7 @@ class ReportesMedicosModel:
     def update(reporte_id: int, reporte_data: dict):
         connection = db.get_connection()
         try:
-            cursor = connection.cursor(dictionary=True)
+            cursor = connection.cursor()
             
             update_fields = []
             values = []
