@@ -1,13 +1,12 @@
 from database import db
-import pymysql
-from pymysql import Error
+from mysql.connector import Error
 
 class PacienteMedicoModel:
     @staticmethod
     def create_solicitud(solicitud_data: dict):
         connection = db.get_connection()
         try:
-            cursor = connection.cursor()
+            cursor = connection.cursor(dictionary=True)
             cursor.execute(
                 """INSERT INTO paciente_medico 
                 (id_paciente, id_medico, estatus, notas) 
@@ -22,7 +21,7 @@ class PacienteMedicoModel:
         except Error as e:
             raise e
         finally:
-            if connection and connection.open:
+            if connection.is_connected():
                 cursor.close()
                 connection.close()
 
@@ -32,7 +31,7 @@ class PacienteMedicoModel:
     def get_medicos_del_paciente(paciente_id: int):
         connection = db.get_connection()
         try:
-            cursor = connection.cursor()
+            cursor = connection.cursor(dictionary=True)
             cursor.execute("""
                 SELECT pm.*, um.nombre as nombre_medico, um.correo as correo_medico
                 FROM paciente_medico pm
@@ -42,7 +41,7 @@ class PacienteMedicoModel:
             """, (paciente_id,))
             return cursor.fetchall()
         finally:
-            if connection and connection.open:
+            if connection.is_connected():
                 cursor.close()
                 connection.close()
 
@@ -51,7 +50,7 @@ class PacienteMedicoModel:
     def actualizar_estatus(relacion_id: int, nuevo_estatus: str, notas: str = None):
         connection = db.get_connection()
         try:
-            cursor = connection.cursor()
+            cursor = connection.cursor(dictionary=True)
             
             if notas:
                 cursor.execute(
@@ -70,7 +69,40 @@ class PacienteMedicoModel:
         except Error as e:
             raise e
         finally:
-            if connection and connection.open:
+            if connection.is_connected():
+                cursor.close()
+                connection.close()
+
+    @staticmethod
+    def actualizar_relacion(relacion_id: int, update_data: dict):
+        connection = db.get_connection()
+        try:
+            cursor = connection.cursor(dictionary=True)
+            
+            # Construir la consulta dinámicamente
+            update_fields = []
+            params = []
+            
+            for field, value in update_data.items():
+                if value is not None:
+                    update_fields.append(f"{field} = %s")
+                    params.append(value)
+            
+            # Siempre actualizar fecha_actualizacion
+            update_fields.append("fecha_actualizacion = NOW()")
+            
+            params.append(relacion_id)
+            
+            query = f"UPDATE paciente_medico SET {', '.join(update_fields)} WHERE id_relacion = %s"
+            cursor.execute(query, params)
+            
+            connection.commit()
+            cursor.execute("SELECT * FROM paciente_medico WHERE id_relacion = %s", (relacion_id,))
+            return cursor.fetchone()
+        except Error as e:
+            raise e
+        finally:
+            if connection.is_connected():
                 cursor.close()
                 connection.close()
 
@@ -78,14 +110,14 @@ class PacienteMedicoModel:
     def verificar_relacion(paciente_id: int, medico_id: int):
         connection = db.get_connection()
         try:
-            cursor = connection.cursor()
+            cursor = connection.cursor(dictionary=True)
             cursor.execute("""
                 SELECT * FROM paciente_medico 
                 WHERE id_paciente = %s AND id_medico = %s
             """, (paciente_id, medico_id))
             return cursor.fetchone()
         finally:
-            if connection and connection.open:
+            if connection.is_connected():
                 cursor.close()
                 connection.close()
 
@@ -100,7 +132,7 @@ class PacienteMedicoModel:
         except Error as e:
             raise e
         finally:
-            if connection and connection.open:
+            if connection.is_connected():
                 cursor.close()
                 connection.close()
                 
@@ -109,7 +141,7 @@ class PacienteMedicoModel:
     def get_medicos_del_paciente(paciente_id: int):
         connection = db.get_connection()
         try:
-            cursor = connection.cursor()
+            cursor = connection.cursor(dictionary=True)
             cursor.execute("""
                 SELECT pm.*, 
                     u.id_usuario,
@@ -130,7 +162,7 @@ class PacienteMedicoModel:
             print(f"❌ Error en get_medicos_del_paciente: {str(e)}")
             raise e
         finally:
-            if connection and connection.open:
+            if connection.is_connected():
                 cursor.close()
                 connection.close()
 
@@ -138,7 +170,7 @@ class PacienteMedicoModel:
     def get_solicitudes_pendientes_medico(medico_id: int):
         connection = db.get_connection()
         try:
-            cursor = connection.cursor()
+            cursor = connection.cursor(dictionary=True)
             cursor.execute("""
                 SELECT pm.*, 
                     p.id_paciente,
@@ -159,7 +191,7 @@ class PacienteMedicoModel:
             print(f"❌ Error en get_solicitudes_pendientes_medico: {str(e)}")
             raise e
         finally:
-            if connection and connection.open:
+            if connection.is_connected():
                 cursor.close()
                 connection.close()
 
@@ -167,7 +199,7 @@ class PacienteMedicoModel:
     def get_pacientes_del_medico(medico_id: int):
         connection = db.get_connection()
         try:
-            cursor = connection.cursor()
+            cursor = connection.cursor(dictionary=True)
             cursor.execute("""
                 SELECT pm.*, 
                     p.id_paciente,
@@ -190,7 +222,7 @@ class PacienteMedicoModel:
             print(f"❌ Error en get_pacientes_del_medico: {str(e)}")
             raise e
         finally:
-            if connection and connection.open:
+            if connection.is_connected():
                 cursor.close()
                 connection.close()
 
@@ -198,7 +230,7 @@ class PacienteMedicoModel:
     def get_by_id(relacion_id: int):
         connection = db.get_connection()
         try:
-            cursor = connection.cursor()
+            cursor = connection.cursor(dictionary=True)
             cursor.execute("""
                 SELECT pm.*, 
                     p.id_usuario as id_usuario_paciente, 
@@ -217,6 +249,6 @@ class PacienteMedicoModel:
             print(f"❌ Error en get_by_id: {str(e)}")
             raise e
         finally:
-            if connection and connection.open:
+            if connection.is_connected():
                 cursor.close()
                 connection.close()
