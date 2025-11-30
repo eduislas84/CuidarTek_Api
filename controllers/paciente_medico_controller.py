@@ -8,7 +8,7 @@ from schemas.paciente_medico_schema import (
     PacienteMedicoConNombres, SolicitudPendiente, PacienteConInfo
 )
 from auth import get_current_active_user, require_medico, require_paciente
-from typing import List
+from typing import List, Dict, Any
 
 router = APIRouter(prefix="/paciente-medico", tags=["paciente-medico"])
 
@@ -159,4 +159,64 @@ async def eliminar_solicitud(
         
         return {"message": "Solicitud eliminada correctamente"}
     except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+# =============================================================================
+# NUEVOS ENDPOINTS AGREGADOS - PARA ACEPTAR SOLICITUDES DESDE EL FRONTEND
+# =============================================================================
+
+@router.put("/relaciones/{relacion_id}")
+async def actualizar_relacion(
+    relacion_id: int,
+    update_data: Dict[str, Any],
+    current_user: dict = Depends(get_current_active_user)
+):
+    try:
+        # Verificar que la relación existe
+        relacion_existente = PacienteMedicoModel.get_by_id(relacion_id)
+        if not relacion_existente:
+            raise HTTPException(status_code=404, detail="Relación no encontrada")
+        
+        # Verificar permisos (solo el médico asignado puede actualizar)
+        if current_user["rol"] == "medico" and relacion_existente["id_medico"] != current_user["id_usuario"]:
+            raise HTTPException(
+                status_code=403,
+                detail="No tienes permisos para actualizar esta relación"
+            )
+        
+        # Actualizar la relación usando el nuevo método
+        relacion_actualizada = PacienteMedicoModel.actualizar_relacion(relacion_id, update_data)
+        return relacion_actualizada
+        
+    except Exception as e:
+        if "detail" in str(e):
+            raise e
+        raise HTTPException(status_code=500, detail=str(e))
+
+@router.patch("/relaciones/{relacion_id}")
+async def actualizar_relacion_parcial(
+    relacion_id: int,
+    update_data: Dict[str, Any],
+    current_user: dict = Depends(get_current_active_user)
+):
+    try:
+        # Verificar que la relación existe
+        relacion_existente = PacienteMedicoModel.get_by_id(relacion_id)
+        if not relacion_existente:
+            raise HTTPException(status_code=404, detail="Relación no encontrada")
+        
+        # Verificar permisos (solo el médico asignado puede actualizar)
+        if current_user["rol"] == "medico" and relacion_existente["id_medico"] != current_user["id_usuario"]:
+            raise HTTPException(
+                status_code=403,
+                detail="No tienes permisos para actualizar esta relación"
+            )
+        
+        # Actualizar la relación usando el nuevo método
+        relacion_actualizada = PacienteMedicoModel.actualizar_relacion(relacion_id, update_data)
+        return relacion_actualizada
+        
+    except Exception as e:
+        if "detail" in str(e):
+            raise e
         raise HTTPException(status_code=500, detail=str(e))
